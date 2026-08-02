@@ -113,12 +113,13 @@ class Dashboard:
     # Live Prediction — reuses predict_engine.py, no duplicate logic
     # =====================================================
 
-    def predict(self, asset, target_price, minutes):
+    def predict(self, asset, target_price, minutes, direction=1):
 
         return run_prediction(
             asset,
             target_price,
             minutes,
+            direction=direction,
             feature_engineer=self.feature_engineer,
             market=self.market,
             logger=self.logger,

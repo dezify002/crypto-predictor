@@ -92,6 +92,7 @@ document
                     asset: document.getElementById("asset").value,
                     target: document.getElementById("target").value,
                     minutes: document.getElementById("minutes").value,
+                    direction: document.getElementById("direction").value,
                 }),
             });
 

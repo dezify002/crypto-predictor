@@ -31,16 +31,18 @@ HORIZONS = [
 
 class ModelTrainer:
 
-    def load_dataset(self, horizon):
+    def load_dataset(self, horizon, direction="above"):
 
         frames = []
+
+        suffix = "" if direction == "above" else "_below"
 
         for asset in ["btc", "eth", "sol"]:
 
             frames.append(
                 pd.read_parquet(
                     DATASET_PATH /
-                    f"{asset}_questions_{horizon}m.parquet"
+                    f"{asset}_questions_{horizon}m{suffix}.parquet"
                 )
             )
 
@@ -68,11 +70,11 @@ class ModelTrainer:
 
         return train, valid, test
 
-    def train_one(self, horizon):
+    def train_one(self, horizon, direction="above"):
 
-        print(f"\n=== Training {horizon}m model ===")
+        print(f"\n=== Training {horizon}m model ({direction}) ===")
 
-        df = self.load_dataset(horizon)
+        df = self.load_dataset(horizon, direction)
 
         train, valid, test = self.split(df)
 
@@ -247,11 +249,13 @@ class ModelTrainer:
 
         )
 
+        suffix = "" if direction == "above" else "_below"
+
         model_file = (
 
             save_dir /
 
-            f"xgb_{horizon}m.joblib"
+            f"xgb_{horizon}m{suffix}.joblib"
 
         )
 
@@ -267,7 +271,7 @@ class ModelTrainer:
 
             save_dir /
 
-            f"xgb_{horizon}m_threshold.json"
+            f"xgb_{horizon}m{suffix}_threshold.json"
 
         )
 
@@ -321,7 +325,8 @@ class ModelTrainer:
         print("=" * 60)
 
         for horizon in HORIZONS:
-            self.train_one(horizon)
+            self.train_one(horizon, direction="above")
+            self.train_one(horizon, direction="below")
 
         print()
         print("=" * 60)

@@ -38,43 +38,51 @@ for asset in ASSETS:
 
     os.makedirs(DATASET_PATH, exist_ok=True)
 
-    # Build one dataset PER horizon
+    # Build one dataset PER horizon, PER direction
     for horizon in HORIZONS:
 
-        print(f"\n----- Horizon: {horizon} minutes -----")
+        for direction, direction_label in [(1, "above"), (-1, "below")]:
 
-        datasets = []
+            print(f"\n----- Horizon: {horizon} minutes | Direction: {direction_label} -----")
 
-        for target in TARGET_RETURNS:
+            datasets = []
 
-            print(f"Target Return: {target:.2%}")
+            for target in TARGET_RETURNS:
 
-            datasets.append(
-                generator.generate(
-                    df=df,
-                    asset=ASSET_IDS[asset],
-                    horizon_minutes=horizon,
-                    target_return=target,
-                    direction=1,   # ONLY ABOVE QUESTIONS
+                print(f"Target Return: {target:.2%}")
+
+                datasets.append(
+                    generator.generate(
+                        df=df,
+                        asset=ASSET_IDS[asset],
+                        horizon_minutes=horizon,
+                        target_return=target,
+                        direction=direction,
+                    )
                 )
+
+            dataset = pd.concat(
+                datasets,
+                ignore_index=True,
             )
 
-        dataset = pd.concat(
-            datasets,
-            ignore_index=True,
-        )
+            if direction == 1:
+                output = (
+                    DATASET_PATH
+                    / f"{asset.lower()}_questions_{horizon}m.parquet"
+                )
+            else:
+                output = (
+                    DATASET_PATH
+                    / f"{asset.lower()}_questions_{horizon}m_below.parquet"
+                )
 
-        output = (
-            DATASET_PATH
-            / f"{asset.lower()}_questions_{horizon}m.parquet"
-        )
+            dataset.to_parquet(output)
 
-        dataset.to_parquet(output)
-
-        print()
-        print("Dataset shape:", dataset.shape)
-        print("Positive labels:", dataset["label"].mean())
-        print("Saved:", output)
+            print()
+            print("Dataset shape:", dataset.shape)
+            print("Positive labels:", dataset["label"].mean())
+            print("Saved:", output)
 
 print("\n===================================")
 print("All datasets generated successfully.")

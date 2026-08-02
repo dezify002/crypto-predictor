@@ -8,7 +8,7 @@ from config import FEATURE_COLUMNS
 from utils.logger import PredictionLogger
 
 
-def run_prediction(asset, target_price, minutes, feature_engineer=None, market=None, logger=None):
+def run_prediction(asset, target_price, minutes, direction=1, feature_engineer=None, market=None, logger=None):
 
     feature_engineer = feature_engineer or FeatureEngineer()
     market = market or LiveMarket()
@@ -21,28 +21,34 @@ def run_prediction(asset, target_price, minutes, feature_engineer=None, market=N
 
     target_price = float(target_price)
     minutes = int(minutes)
+    direction = int(direction)
 
     if minutes <= 0:
         raise ValueError("Minutes must be greater than zero.")
+
+    if direction not in [1, -1]:
+        raise ValueError("Direction must be 1 (ABOVE) or -1 (BELOW).")
 
     # ====================================
     # SELECT MODEL
     # ====================================
 
+    suffix = "" if direction == 1 else "_below"
+
     if minutes <= 15:
-        model_file = "models/xgb_15m.joblib"
+        model_file = f"models/xgb_15m{suffix}.joblib"
         model_name = "15 Minute"
     elif minutes <= 30:
-        model_file = "models/xgb_30m.joblib"
+        model_file = f"models/xgb_30m{suffix}.joblib"
         model_name = "30 Minute"
     elif minutes <= 60:
-        model_file = "models/xgb_60m.joblib"
+        model_file = f"models/xgb_60m{suffix}.joblib"
         model_name = "60 Minute"
     elif minutes <= 120:
-        model_file = "models/xgb_120m.joblib"
+        model_file = f"models/xgb_120m{suffix}.joblib"
         model_name = "120 Minute"
     else:
-        model_file = "models/xgb_240m.joblib"
+        model_file = f"models/xgb_240m{suffix}.joblib"
         model_name = "240 Minute"
 
     model = joblib.load(model_file)
@@ -80,17 +86,23 @@ def run_prediction(asset, target_price, minutes, feature_engineer=None, market=N
 
     current_price = float(latest["close"])
 
-    if target_price <= current_price:
+    if direction == 1 and target_price <= current_price:
         raise ValueError(
-            f"Target price must be above the current price "
+            f"For an ABOVE prediction, target price must be above the current price "
             f"(current: ${current_price:,.2f})."
         )
 
-    required_return = (target_price - current_price) / current_price
+    if direction == -1 and target_price >= current_price:
+        raise ValueError(
+            f"For a BELOW prediction, target price must be below the current price "
+            f"(current: ${current_price:,.2f})."
+        )
+
+    required_return = abs(target_price - current_price) / current_price
 
     latest["required_return"] = required_return
     latest["minutes_remaining"] = minutes
-    latest["direction"] = 1
+    latest["direction"] = direction
 
     X = pd.DataFrame([latest[FEATURE_COLUMNS]])
 
@@ -228,6 +240,7 @@ def run_prediction(asset, target_price, minutes, feature_engineer=None, market=N
 
     return {
         "asset": asset,
+        "direction": "ABOVE" if direction == 1 else "BELOW",
         "model_name": model_name,
         "decision_threshold": decision_threshold,
         "threshold_found": threshold_found,

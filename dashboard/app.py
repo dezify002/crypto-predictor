@@ -29,6 +29,7 @@ def api_predict():
             asset=data["asset"],
             target_price=data["target"],
             minutes=data["minutes"],
+            direction=int(data.get("direction", 1)),
         )
         return jsonify(result)
 

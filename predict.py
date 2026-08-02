@@ -4,13 +4,17 @@ print("\n=== Crypto Prediction AI ===\n")
 
 asset = input("Asset (BTC/ETH/SOL): ").upper().strip()
 
+direction_input = input("Direction (ABOVE/BELOW): ").upper().strip()
+
+direction = 1 if direction_input == "ABOVE" else -1
+
 target_price = float(input("Target price: "))
 
 minutes = int(input("Prediction time in minutes: "))
 
-result = run_prediction(asset, target_price, minutes)
+result = run_prediction(asset, target_price, minutes, direction=direction)
 
-print(f"\nUsing AI Model: {result['model_name']}")
+print(f"\nUsing AI Model: {result['model_name']} ({result['direction']})")
 
 if result["threshold_found"]:
     print(f"Decision Threshold: {result['decision_threshold']:.2f}")
@@ -24,6 +28,7 @@ print("CRYPTO PREDICTION REPORT")
 print("=" * 60)
 
 print(f"Asset              : {result['asset']}")
+print(f"Direction          : {result['direction']}")
 print(f"AI Model           : {result['model_name']}")
 print(f"Decision Threshold : {result['decision_threshold']:.2f}")
 print()
@@ -65,8 +70,10 @@ print("=" * 60)
 
 status = "LIKELY" if result["prediction_yes"] else "UNLIKELY"
 
+direction_word = "ABOVE" if direction == 1 else "BELOW"
+
 print(
-    f"The AI predicts {result['asset']} is {status} to trade ABOVE "
+    f"The AI predicts {result['asset']} is {status} to trade {direction_word} "
     f"${result['target_price']:,.2f} within {result['minutes']} minutes."
 )
 print(f"Probability: {result['probability']*100:.2f}%")
