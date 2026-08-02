@@ -57,7 +57,18 @@ class PredictionLogger:
 
         }
 
-        df = pd.read_csv(LOG_FILE)
+        LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+        if LOG_FILE.exists() and LOG_FILE.stat().st_size > 0:
+
+            try:
+                df = pd.read_csv(LOG_FILE)
+            except pd.errors.EmptyDataError:
+                df = pd.DataFrame()
+
+        else:
+
+            df = pd.DataFrame()
 
         df = pd.concat(
             [df, pd.DataFrame([row])],
