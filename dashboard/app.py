@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, render_template, jsonify, request
 
-from dashboard_utils import Dashboard
+from dashboard.dashboard_utils import Dashboard
 
 app = Flask(__name__)
 
