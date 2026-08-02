@@ -1,0 +1,9 @@
+venv312/ 
+.venv/ 
+__pycache__/ 
+*.pyc 
+datasets/ 
+historical_data/ 
+logs/ 
+binance_archive_cache/ 
+.env 

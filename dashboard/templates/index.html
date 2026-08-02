@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Dezify AI Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <header>
+
+        <h1>🚀 Dezify AI Dashboard</h1>
+
+        <p>
+            Crypto Prediction System
+        </p>
+
+    </header>
+
+    <!-- ========================================== -->
+    <!-- MAKE PREDICTION -->
+    <!-- ========================================== -->
+
+    <div class="section">
+
+        <h2>Make Prediction</h2>
+
+        <form id="predictForm">
+
+            <label>Asset</label><br>
+
+            <select id="asset">
+                <option>BTC</option>
+                <option>ETH</option>
+                <option>SOL</option>
+            </select>
+
+            <br><br>
+
+            <label>Target Price</label><br>
+
+            <input type="number" id="target" step="0.01" required>
+
+            <br><br>
+
+            <label>Minutes</label><br>
+
+            <input type="number" id="minutes" required>
+
+            <br><br>
+
+            <button type="submit">Predict</button>
+
+        </form>
+
+    </div>
+
+    <div class="section">
+
+        <h2>Prediction Result</h2>
+
+        <pre id="predictionResult">No prediction yet.</pre>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- METRICS -->
+    <!-- ========================================== -->
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Accuracy</h3>
+            <h2 id="accuracy">--</h2>
+        </div>
+
+        <div class="card">
+            <h3>Precision</h3>
+            <h2 id="precision">--</h2>
+        </div>
+
+        <div class="card">
+            <h3>Recall</h3>
+            <h2 id="recall">--</h2>
+        </div>
+
+        <div class="card">
+            <h3>F1 Score</h3>
+            <h2 id="f1">--</h2>
+        </div>
+
+        <div class="card">
+            <h3>ROC AUC</h3>
+            <h2 id="roc">--</h2>
+        </div>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODEL INFO -->
+    <!-- ========================================== -->
+
+    <div class="section">
+
+        <h2>Model Information</h2>
+
+        <table>
+
+            <tr>
+                <td>Walk Forward Folds</td>
+                <td id="folds">--</td>
+            </tr>
+
+            <tr>
+                <td>Average Confidence</td>
+                <td id="confidence">--</td>
+            </tr>
+
+            <tr>
+                <td>Calibration</td>
+                <td id="calibration">--</td>
+            </tr>
+
+            <tr>
+                <td>Total Predictions</td>
+                <td id="total">--</td>
+            </tr>
+
+        </table>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- THRESHOLDS -->
+    <!-- ========================================== -->
+
+    <div class="section">
+
+        <h2>Decision Thresholds</h2>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>Model</th>
+                <th>Threshold</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr>
+                <td>15 Minute</td>
+                <td id="t15">--</td>
+            </tr>
+
+            <tr>
+                <td>30 Minute</td>
+                <td id="t30">--</td>
+            </tr>
+
+            <tr>
+                <td>60 Minute</td>
+                <td id="t60">--</td>
+            </tr>
+
+            <tr>
+                <td>120 Minute</td>
+                <td id="t120">--</td>
+            </tr>
+
+            <tr>
+                <td>240 Minute</td>
+                <td id="t240">--</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- ========================================== -->
+    <!-- RECENT PREDICTIONS -->
+    <!-- ========================================== -->
+
+    <div class="section">
+
+        <h2>Recent Predictions</h2>
+
+        <table id="predictionTable">
+
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Asset</th>
+                <th>Target</th>
+                <th>Minutes</th>
+                <th>Probability</th>
+                <th>Prediction</th>
+            </tr>
+            </thead>
+
+            <tbody></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+</body>
+
+</html>
